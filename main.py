@@ -18,58 +18,29 @@ def get_course_assignments(course_ID):
     return assignments
 
 
-def transform_assignments_to_df(assignments):
-    dates = []
-    tasks = []
+def add_tasks_to_todoist(assignments):
+    api = TodoistAPI(TODOIST_KEY)
+    project_name = input(
+        "What would you like to name the project in Todoist? ")
+    try:
+        project = api.add_project(name=project_name)
+    except Exception as error:
+        print(error)
 
     for assignment in assignments:
-        tasks.append(assignment.name)
-        dates.append(assignment.due_at)
-
-    df = pd.DataFrame({'Tasks': tasks, 'Dates': dates})
-    return df
-
-
-def process_df_for_todoist(df):
-    df = df.sort_values(by=['Dates'])
-    df = df.rename(columns={"Dates": "DATE", "Tasks": "CONTENT"})
-
-    # requisite columns for Todoist import
-    df['TYPE'] = "task"
-    df['PRIORITY'] = 4
-    df['INDENT'] = ""
-    df['AUTHOR'] = ""
-    df['RESPONSIBLE'] = ""
-    df['DATE_LANG'] = "en"
-    df['TIMEZONE'] = ""
-
-    # reorder columns and output to csv
-    df = df[['TYPE', 'CONTENT', 'PRIORITY', 'INDENT', 'AUTHOR',
-            'RESPONSIBLE', 'DATE', 'DATE_LANG', 'TIMEZONE']]
-
-    return df
+        try:
+            task = api.add_task(
+                content=assignment.name,
+                due_datetime=assignment.due_at,
+                project_id=project.id)
+            print(f'Added task {task.content} to {project.name}')
+        except Exception as error:
+            print(error)
 
 
 if __name__ == "__main__":
     courses = {'cs362': 1849691, 'cs325': 1784199, 'cs361': 1877222}
     course_ID = courses['cs362']
     assignments = get_course_assignments(course_ID)
-    df = transform_assignments_to_df(assignments)
-    df = process_df_for_todoist(df)
-
-    api = TodoistAPI(TODOIST_KEY)
-    project_name = input(
-        "What would you like to name the project in Todoist? ")
-    try:
-        project = api.add_project(name=project_name)
-        for index, row in df.iterrows():
-            task = api.add_task(
-                content=row['CONTENT'],
-                due_datetime=row['DATE'],
-                project_id=project.id)
-            print(f'Added task {task.content} to {project.name}')
-    except Exception as error:
-        print(error)
-
-    # df.to_csv(f'test.csv')
+    add_tasks_to_todoist(assignments)
     print('Processing complete!')
