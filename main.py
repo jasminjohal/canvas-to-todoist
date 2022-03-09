@@ -1,13 +1,12 @@
 from dotenv import load_dotenv
 from canvasapi import Canvas
 import os
-import pandas as pd
 from todoist_api_python.api import TodoistAPI
 
 load_dotenv()
 API_URL = "https://canvas.oregonstate.edu/"
-API_KEY = os.environ.get("CANVAS_KEY")
-canvas = Canvas(API_URL, API_KEY)
+CANVAS_KEY = os.environ.get("CANVAS_KEY")
+canvas = Canvas(API_URL, CANVAS_KEY)
 TODOIST_KEY = os.environ.get("TODOIST_KEY")
 
 
@@ -18,7 +17,7 @@ def get_course_assignments(course_ID):
     return assignments
 
 
-def add_tasks_to_todoist(assignments):
+def add_tasks_to_todoist(assignments, verbosity):
     api = TodoistAPI(TODOIST_KEY)
     project_name = input(
         "What would you like to name the project in Todoist? ")
@@ -33,7 +32,8 @@ def add_tasks_to_todoist(assignments):
                 content=assignment.name,
                 due_datetime=assignment.due_at,
                 project_id=project.id)
-            print(f'Added task {task.content} to {project.name}')
+            if verbosity:
+                print(f'Added task \'{task.content}\' to {project.name}')
         except Exception as error:
             print(error)
 
@@ -42,5 +42,5 @@ if __name__ == "__main__":
     courses = {'cs362': 1849691, 'cs325': 1784199, 'cs361': 1877222}
     course_ID = courses['cs362']
     assignments = get_course_assignments(course_ID)
-    add_tasks_to_todoist(assignments)
+    add_tasks_to_todoist(assignments, verbosity=True)
     print('Processing complete!')
