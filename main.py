@@ -2,11 +2,13 @@ from dotenv import load_dotenv
 from canvasapi import Canvas
 import os
 import pandas as pd
+from todoist_api_python.api import TodoistAPI
 
 load_dotenv()
 API_URL = "https://canvas.oregonstate.edu/"
 API_KEY = os.environ.get("CANVAS_KEY")
 canvas = Canvas(API_URL, API_KEY)
+TODOIST_KEY = os.environ.get("TODOIST_KEY")
 
 
 def get_course_assignments(course_ID):
@@ -50,9 +52,24 @@ def process_df_for_todoist(df):
 
 if __name__ == "__main__":
     courses = {'cs362': 1849691, 'cs325': 1784199, 'cs361': 1877222}
-    course_ID = courses['cs361']
+    course_ID = courses['cs362']
     assignments = get_course_assignments(course_ID)
     df = transform_assignments_to_df(assignments)
     df = process_df_for_todoist(df)
-    df.to_csv(f'test.csv')
+
+    api = TodoistAPI(TODOIST_KEY)
+    project_name = input(
+        "What would you like to name the project in Todoist? ")
+    try:
+        project = api.add_project(name=project_name)
+        for index, row in df.iterrows():
+            task = api.add_task(
+                content=row['CONTENT'],
+                due_datetime=row['DATE'],
+                project_id=project.id)
+            print(f'Added task {task.content} to {project.name}')
+    except Exception as error:
+        print(error)
+
+    # df.to_csv(f'test.csv')
     print('Processing complete!')
