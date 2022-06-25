@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 from canvasapi import Canvas
 import os
-import pandas as pd
 from todoist_api_python.api import TodoistAPI
 
 load_dotenv()
@@ -39,8 +38,9 @@ def add_tasks_to_todoist(assignments):
 
 
 if __name__ == "__main__":
-    courses = {'cs362': 1849691, 'cs325': 1784199, 'cs361': 1877222}
-    course_ID = courses['cs362']
+    courses = {'cs362': 1849691, 'cs325': 1784199,
+               'cs361': 1877222, 'cs493': 1870359}
+    course_ID = courses['cs493']
     assignments = get_course_assignments(course_ID)
     add_tasks_to_todoist(assignments)
     print('Processing complete!')
