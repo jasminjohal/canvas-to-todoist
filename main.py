@@ -39,8 +39,9 @@ def add_tasks_to_todoist(assignments, verbosity):
 
 
 if __name__ == "__main__":
-    courses = {'cs362': 1849691, 'cs325': 1784199, 'cs361': 1877222}
-    course_ID = courses['cs362']
+    courses = {'cs362': 1849691, 'cs325': 1784199,
+               'cs361': 1877222, 'cs493': 1870359}
+    course_ID = courses['cs493']
     assignments = get_course_assignments(course_ID)
     add_tasks_to_todoist(assignments, verbosity=True)
     print('Processing complete!')
