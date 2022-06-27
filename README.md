@@ -47,7 +47,7 @@ TODOIST_KEY={your_todoist_key}
 $ python main.py
 ```
 
-Pay attention to the console because the application will ask you to input information twice. First, it will ask you to enter in the ID of a course. This course ID can be extracted from the course's Canvas URL. It is the 7-digit number after `/courses/`.
+Pay attention to the console because the application will ask you to input information twice. First, it will ask you to enter in the ID of a course. This course ID can be extracted from the course's Canvas URL. It is the number after `/courses/`.
 
 For example, for CS 361, the course ID is `1877222`.
 
